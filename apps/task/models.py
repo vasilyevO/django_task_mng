@@ -1,7 +1,4 @@
 from django.db import models
-from django.db.models.functions import TruncDate
-from django.core.exceptions import ValidationError
-from django.utils import timezone
 
 
 class Status(models.TextChoices):
@@ -18,6 +15,7 @@ class Category(models.Model):
     name = models.CharField(max_length=30, unique=True)
 
     class Meta:
+        db_table = 'task_manager_category'
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
         ordering = ['name']
@@ -29,7 +27,7 @@ class Category(models.Model):
 class Task(models.Model):
     """Задача для выполнения."""
 
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     categories = models.ManyToManyField(
         Category,
@@ -45,6 +43,7 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table = 'task_manager_task'
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
         ordering = ['-created_at']
@@ -52,31 +51,11 @@ class Task(models.Model):
     def __str__(self) -> str:
         return self.title
 
-    def clean(self) -> None:
-        """Проверяет уникальность названия в пределах даты создания.
-
-        Raises:
-            ValidationError: Задача с таким названием уже есть на эту дату.
-        """
-        target_date = (
-            self.created_at.date() if self.created_at else timezone.localdate()
-        )
-        duplicates = Task.objects.filter(
-            title=self.title,
-            created_at__date=target_date,
-        )
-        if self.pk:
-            duplicates = duplicates.exclude(pk=self.pk)
-        if duplicates.exists():
-            raise ValidationError(
-                {'title': 'Задача с таким названием уже создана на эту дату.'}
-            )
-
 
 class SubTask(models.Model):
     """Отдельная часть основной задачи."""
 
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     task = models.ForeignKey(
         Task,
@@ -92,6 +71,7 @@ class SubTask(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        db_table = 'task_manager_subtask'
         verbose_name = 'SubTask'
         verbose_name_plural = 'SubTasks'
         ordering = ['-created_at']
