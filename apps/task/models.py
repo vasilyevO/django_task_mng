@@ -21,6 +21,24 @@ class Category(UUIDModel, TimeStampedModel):
         return self.name
 
 
+class Project(UUIDModel, TimeStampedModel):
+    """Проект, объединяющий задачи."""
+
+    name = models.CharField(
+        max_length=100, unique=True, verbose_name=_('Name')
+    )
+    description = models.TextField(blank=True, verbose_name=_('Description'))
+
+    class Meta:
+        db_table = 'task_manager_project'
+        verbose_name = _('Project')
+        verbose_name_plural = _('Projects')
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Task(UUIDModel, TimeStampedModel):
     """Задача для выполнения."""
 
