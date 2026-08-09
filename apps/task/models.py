@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import FileExtensionValidator
 
 from apps.core.models import Status, TimeStampedModel, UUIDModel
 
@@ -34,6 +35,11 @@ class Project(UUIDModel, TimeStampedModel):
     name = models.CharField(
         max_length=100, unique=True, verbose_name=_('Name'))
     description = models.TextField(blank=True, verbose_name=_('Description'))
+
+    @property
+    def count_of_files(self) -> int:
+        """Количество файлов проекта (вычисляется на лету)."""
+        return self.files.count()
 
     class Meta:
         db_table = 'task_manager_project'
@@ -70,8 +76,16 @@ class ProjectFile(UUIDModel, TimeStampedModel):
         verbose_name=_('Project'),
     )
     file_name = models.CharField(max_length=255, verbose_name=_('File name'))
-    file_path = models.CharField(max_length=500, verbose_name=_('File path'))
-
+    file_path = models.FileField(
+        upload_to='documents/',
+        max_length=500,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['pdf', 'csv', 'doc', 'docx', 'xlsx'],
+            ),
+        ],
+        verbose_name=_('File path'),
+    )
     class Meta:
         db_table = 'task_manager_project_file'
         verbose_name = _('Project file')

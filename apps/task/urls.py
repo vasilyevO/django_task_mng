@@ -1,18 +1,45 @@
 from django.urls import path
 
 from apps.task import views
+from apps.task.views.subtasks import (
+    SubTaskDetailUpdateDeleteView,
+    SubTaskListCreateView,
+)
+from apps.task.views.tags import TagDetailView, TagListCreateView
+from apps.task.views.tasks import (
+    TaskDetailView,
+    TaskListCreateView,
+    TaskStatisticsView,
+)
 
 app_name = 'task'
 
 urlpatterns = [
+    # --- ещё не переведено на APIView ---
     path('projects/', views.get_all_projects, name='project-list'),
-    path('tasks/', views.get_all_tasks, name='task-list'),
-    path('tasks/create/', views.create_task, name='task-create'),
-    path('tasks/statistics/', views.get_task_statistics, name='task-statistics'),
-    path('tasks/<uuid:task_id>/', views.get_task_by_id, name='task-detail'),
-    path('tags/', views.get_all_tags, name='tag-list'),
-    path('tags/create/', views.create_tag, name='tag-create'),
-    path('tags/<uuid:tag_id>/', views.get_tag_by_id, name='tag-detail'),
-    path('tags/<uuid:tag_id>/update/', views.update_tag, name='tag-update'),
-    path('tags/<uuid:tag_id>/delete/', views.delete_tag, name='tag-delete'),
+
+    # --- задачи ---
+    path('tasks/', TaskListCreateView.as_view(), name='task-list-create'),
+    path(
+        'tasks/statistics/',
+        TaskStatisticsView.as_view(),
+        name='task-statistics',
+    ),
+    path('tasks/<uuid:pk>/', TaskDetailView.as_view(), name='task-detail'),
+
+    # --- теги ---
+    path('tags/', TagListCreateView.as_view(), name='tag-list-create'),
+    path('tags/<uuid:pk>/', TagDetailView.as_view(), name='tag-detail'),
+
+    # --- подзадачи ---
+    path(
+        'subtasks/',
+        SubTaskListCreateView.as_view(),
+        name='subtask-list-create',
+    ),
+    path(
+        'subtasks/<uuid:pk>/',
+        SubTaskDetailUpdateDeleteView.as_view(),
+        name='subtask-detail',
+    ),
 ]
