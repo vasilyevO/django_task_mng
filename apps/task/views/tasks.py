@@ -5,6 +5,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
 from apps.core.models import Status
 from apps.core.views import BaseDetailAPIView
 from apps.task.models import Task
@@ -13,6 +14,7 @@ from apps.task.serializers.tasks import (
     TaskCreateSerializer,
     TaskDetailSerializer,
 )
+from apps.task.filters import parse_weekday
 
 
 class TaskListCreateView(APIView):
@@ -24,6 +26,12 @@ class TaskListCreateView(APIView):
         project_name = request.query_params.get('project')
         if project_name:
             queryset = queryset.filter(project__name=project_name)
+
+        weekday = request.query_params.get('weekday')
+        if weekday:
+            queryset = queryset.filter(
+                deadline__iso_week_day=parse_weekday(weekday),
+            )
 
         return queryset
 
