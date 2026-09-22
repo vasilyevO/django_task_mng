@@ -2,6 +2,7 @@ from django.db.models import Count
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status
+from rest_framework.permissions import IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -40,6 +41,8 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class TaskStatisticsView(APIView):
     """Статистика по задачам"""
+
+    permission_classes = [IsAdminUser]
 
     def get(self, request: Request) -> Response:
         by_status = Task.objects.values('status').annotate(count=Count('id'))

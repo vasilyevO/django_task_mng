@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.core.permissions import IsAdminOrReadOnly
 from apps.task.models import Category
 from apps.task.serializers.categories import (
     CategoryCreateSerializer,
@@ -17,6 +18,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     queryset = Category.objects.all()  # менеджер уже скрывает «удалённые»
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminOrReadOnly]
 
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']

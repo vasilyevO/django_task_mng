@@ -10,3 +10,5 @@ sqlparse==0.5.5
 types-PyYAML==6.0.12.20260724
 typing_extensions==4.16.0
 tzdata==2026.3
+djangorestframework_simplejwt==5.5.1
+PyJWT==2.14.0
