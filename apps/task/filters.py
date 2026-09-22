@@ -1,5 +1,7 @@
 """Вспомогательные функции для фильтрации по query-параметрам."""
+import django_filters
 
+from apps.task.models import SubTask, Task
 from rest_framework.exceptions import ValidationError
 
 # ISO-нумерация: понедельник = 1, воскресенье = 7
@@ -37,3 +39,32 @@ def parse_weekday(value: str) -> int:
         })
 
     return WEEKDAYS[normalized]
+
+class TaskFilter(django_filters.FilterSet):
+    """Фильтр задач: точный статус + диапазон по дедлайну."""
+
+    deadline_after = django_filters.DateFilter(
+        field_name='deadline', lookup_expr='date__gte',
+    )
+    deadline_before = django_filters.DateFilter(
+        field_name='deadline', lookup_expr='date__lte',
+    )
+
+    class Meta:
+        model = Task
+        fields = ['status', 'deadline_after', 'deadline_before']
+
+
+class SubTaskFilter(django_filters.FilterSet):
+    """Фильтр подзадач: точный статус + диапазон по дедлайну."""
+
+    deadline_after = django_filters.DateFilter(
+        field_name='deadline', lookup_expr='date__gte',
+    )
+    deadline_before = django_filters.DateFilter(
+        field_name='deadline', lookup_expr='date__lte',
+    )
+
+    class Meta:
+        model = SubTask
+        fields = ['status', 'deadline_after', 'deadline_before']

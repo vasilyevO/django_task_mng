@@ -2,20 +2,19 @@ from rest_framework import serializers
 
 from apps.task.models import SubTask
 
-
 class SubTaskSerializer(serializers.ModelSerializer):
-    """Краткая информация о подзадаче — для вложения в задачу."""
+    """Полный сериализатор подзадачи для CRUD."""
 
     class Meta:
         model = SubTask
         fields = [
-            'id', 'title', 'description',
+            'id', 'title', 'description', 'task',
             'status', 'deadline', 'created_at',
         ]
-
+        read_only_fields = ['id', 'created_at']
 
 class SubTaskCreateSerializer(serializers.ModelSerializer):
-    """Создание и обновление подзадачи (Задание 1)."""
+    """Создание и обновление подзадачи"""
 
     created_at = serializers.DateTimeField(read_only=True)
 
@@ -26,3 +25,4 @@ class SubTaskCreateSerializer(serializers.ModelSerializer):
             'status', 'deadline', 'created_at',
         ]
         read_only_fields = ['id']
+

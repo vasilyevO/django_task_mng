@@ -61,3 +61,14 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             'project', 'tags', 'subtasks',
             'created_at', 'updated_at', 'deadline',
         ]
+
+class TaskSerializer(serializers.ModelSerializer):
+    """Полный сериализатор задачи для CRUD через Generic Views."""
+
+    class Meta:
+        model = Task
+        fields = [
+            'id', 'title', 'description',
+            'status', 'deadline', 'created_at',
+        ]
+        read_only_fields = ['id', 'created_at']
