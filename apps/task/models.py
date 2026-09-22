@@ -1,25 +1,78 @@
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import FileExtensionValidator
 
 from apps.core.models import Status, TimeStampedModel, UUIDModel
 
 
+class SoftDeleteQuerySet(models.QuerySet):
+    """QuerySet, в котором массовое удаление тоже мягкое."""
+
+    def delete(self):
+        return super().update(is_deleted=True, deleted_at=timezone.now())
+
+    def hard_delete(self):
+        """Настоящее удаление из БД — когда оно действительно нужно."""
+        return super().delete()
+
+
+class CategoryManager(models.Manager):
+    """Менеджер по умолчанию: «удалённые» категории не видны."""
+
+    def get_queryset(self) -> SoftDeleteQuerySet:
+        return SoftDeleteQuerySet(self.model, using=self._db).filter(
+            is_deleted=False,
+        )
+
+
 class Category(UUIDModel, TimeStampedModel):
     """Категория выполнения."""
 
-    name = models.CharField(
-        max_length=30, unique=True, verbose_name=_('Name')
+    name = models.CharField(max_length=30, verbose_name=_('Name'))
+    is_deleted = models.BooleanField(
+        default=False, verbose_name=_('Is deleted')
     )
+    deleted_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_('Deleted at')
+    )
+
+    objects = CategoryManager()
+    all_objects = models.Manager()  # включая «удалённые»
 
     class Meta:
         db_table = 'task_manager_category'
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')
         ordering = ['name']
+        constraints = [
+            # имя уникально только среди «живых» категорий:
+            # мягко удалённое имя можно использовать снова
+            models.UniqueConstraint(
+                fields=['name'],
+                condition=models.Q(is_deleted=False),
+                name='unique_active_category_name',
+            ),
+        ]
 
     def __str__(self) -> str:
         return self.name
+
+    def delete(self, using=None, keep_parents=False):
+        """Мягкое удаление: запись остаётся в БД, но помечается удалённой."""
+        self.is_deleted = True
+        self.deleted_at = timezone.now()
+        self.save(using=using, update_fields=['is_deleted', 'deleted_at'])
+
+    def hard_delete(self, using=None, keep_parents=False):
+        """Физическое удаление записи."""
+        return super().delete(using=using, keep_parents=keep_parents)
+
+    def restore(self) -> None:
+        """Возвращает мягко удалённую категорию обратно."""
+        self.is_deleted = False
+        self.deleted_at = None
+        self.save(update_fields=['is_deleted', 'deleted_at'])
 
 
 class Priority(models.TextChoices):

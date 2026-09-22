@@ -30,4 +30,4 @@ class SubTaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = SubTaskSerializer
     lookup_field = 'id'
-    lookup_url_kwarg = 'subgitask_id'
+    lookup_url_kwarg = 'subtask_id'

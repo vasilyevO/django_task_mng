@@ -1,6 +1,8 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
 from apps.task.views import lagacy
+from apps.task.views.categories import CategoryViewSet
 from apps.task.views.subtasks import (
     SubTaskDetailView,
     SubTaskListCreateView,
@@ -14,7 +16,12 @@ from apps.task.views.tasks import (
 
 app_name = 'task'
 
+router = DefaultRouter()
+router.register('categories', CategoryViewSet, basename='category')
+
 urlpatterns = [
+    path('', include(router.urls)),
+
     path('projects/', lagacy.get_all_projects, name='project-list'),
 
     path('tasks/', TaskListCreateView.as_view(), name='task-list'),

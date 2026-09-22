@@ -11,6 +11,16 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'created_at']
 
 
+class CategoryTaskCountSerializer(serializers.ModelSerializer):
+    """Категория вместе с количеством связанных задач."""
+
+    tasks_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'tasks_count']
+
+
 class CategoryCreateSerializer(serializers.ModelSerializer):
     """Создание и обновление категории (Д/З 2).
 
