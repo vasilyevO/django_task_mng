@@ -1,8 +1,7 @@
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import CursorPagination
 
-class StandardPagination(PageNumberPagination):
-    """Постраничная навигация: 5 объектов на страницу."""
 
-    page_size = 5
-    page_size_query_param = 'page_size'
-    max_page_size = 50
+class StandardCursorPagination(CursorPagination):
+    page_size = 6
+    ordering = '-created_at'
+    page_size_query_param = None
