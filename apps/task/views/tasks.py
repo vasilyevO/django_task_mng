@@ -2,12 +2,13 @@ from django.db.models import Count
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.models import Status
+from apps.core.permissions import IsOwnerOrReadOnly
 from apps.task.models import Task
 from apps.task.filters import TaskFilter
 from apps.task.serializers.tasks import TaskSerializer
@@ -29,12 +30,31 @@ class TaskListCreateView(generics.ListCreateAPIView):
     ordering_fields = ['created_at']
     ordering = ['-created_at']
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class MyTaskListView(generics.ListAPIView):
+    """GET — задачи текущего пользователя"""
+
+    serializer_class = TaskSerializer
+    filterset_class = TaskFilter
+    search_fields = ['title', 'description']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Task.objects.none()
+        return Task.objects.filter(owner=self.request.user)
+
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     """GET/PUT/PATCH/DELETE одной задачи"""
 
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     lookup_field = 'id'
     lookup_url_kwarg = 'task_id'
 

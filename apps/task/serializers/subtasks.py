@@ -9,9 +9,9 @@ class SubTaskSerializer(serializers.ModelSerializer):
         model = SubTask
         fields = [
             'id', 'title', 'description', 'task',
-            'status', 'deadline', 'created_at',
+            'status', 'deadline', 'owner', 'created_at',
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'owner', 'created_at']
 
 class SubTaskCreateSerializer(serializers.ModelSerializer):
     """Создание и обновление подзадачи"""

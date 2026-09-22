@@ -9,6 +9,7 @@ from apps.task.views.subtasks import (
 )
 from apps.task.views.tags import TagDetailView, TagListCreateView
 from apps.task.views.tasks import (
+    MyTaskListView,
     TaskDetailView,
     TaskListCreateView,
     TaskStatisticsView,
@@ -25,6 +26,7 @@ urlpatterns = [
     path('projects/', lagacy.get_all_projects, name='project-list'),
 
     path('tasks/', TaskListCreateView.as_view(), name='task-list'),
+    path('tasks/my/', MyTaskListView.as_view(), name='task-my'),
     path('tasks/statistics/', TaskStatisticsView.as_view(),
          name='task-statistics'),
     path('tasks/<uuid:task_id>/', TaskDetailView.as_view(), name='task-detail'),

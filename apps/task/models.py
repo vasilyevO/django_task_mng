@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -189,6 +190,14 @@ class Task(UUIDModel, TimeStampedModel):
         verbose_name=_('Status'),
     )
     deadline = models.DateTimeField(verbose_name=_('Deadline'))
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='tasks',
+        verbose_name=_('Owner'),
+    )
 
     class Meta:
         db_table = 'task_manager_task'
@@ -220,6 +229,14 @@ class SubTask(UUIDModel, TimeStampedModel):
         verbose_name=_('Status'),
     )
     deadline = models.DateTimeField(verbose_name=_('Deadline'))
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='subtasks',
+        verbose_name=_('Owner'),
+    )
 
     class Meta:
         db_table = 'task_manager_subtask'
