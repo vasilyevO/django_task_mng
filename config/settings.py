@@ -51,10 +51,12 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'drf_spectacular',
     'apps.task.apps.TaskConfig',
     'apps.core.apps.CoreConfig',
+    'apps.users.apps.UsersConfig',
 
 ]
 
@@ -97,7 +99,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardCursorPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'apps.users.authentication.CookieJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -116,7 +118,16 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
 }
+
+AUTH_COOKIE_ACCESS = 'access_token'
+AUTH_COOKIE_REFRESH = 'refresh_token'
+AUTH_COOKIE_REFRESH_PATH = '/api/auth/'
+AUTH_COOKIE_SECURE = not DEBUG
+AUTH_COOKIE_SAMESITE = 'Lax'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -138,6 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
