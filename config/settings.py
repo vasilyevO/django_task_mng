@@ -129,8 +129,10 @@ AUTH_COOKIE_REFRESH_PATH = '/api/auth/'
 AUTH_COOKIE_SECURE = not DEBUG
 AUTH_COOKIE_SAMESITE = 'Lax'
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'Task Manager <noreply@taskmanager.local>'
+
+
 
 DATABASES = {
     'default': env.db(
@@ -140,8 +142,7 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -160,8 +161,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -172,8 +171,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
 
@@ -181,8 +178,6 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# Logging
-# https://docs.djangoproject.com/en/6.0/topics/logging/
 
 LOGGING = {
     'version': 1,

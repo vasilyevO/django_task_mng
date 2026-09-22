@@ -1,0 +1,9 @@
+Здравствуйте, {{ user.get_full_name|default:user.username }}!
+
+{% if is_closed %}Ваша задача «{{ task.title }}» закрыта.{% else %}У вашей задачи «{{ task.title }}» изменился статус.{% endif %}
+
+Было:  {{ old_status }}
+Стало: {{ new_status }}
+Дедлайн: {{ task.deadline|date:"d.m.Y H:i" }}
+
+— Task Manager

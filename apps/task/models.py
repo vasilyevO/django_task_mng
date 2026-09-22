@@ -189,6 +189,13 @@ class Task(UUIDModel, TimeStampedModel):
         default=Status.NEW,
         verbose_name=_('Status'),
     )
+    last_notified_status = models.CharField(
+        max_length=15,
+        choices=Status.choices,
+        blank=True,
+        editable=False,
+        verbose_name=_('Last notified status'),
+    )
     deadline = models.DateTimeField(verbose_name=_('Deadline'))
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
